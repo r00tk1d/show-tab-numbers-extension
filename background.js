@@ -1,20 +1,23 @@
 function updateTabNumbers() {
-  chrome.tabs.query({}, (tabs) => {
-    const tabCount = tabs.length;
-    tabs.forEach((tab, index) => {
-      let tabNumber;
-      if (index < 8) {
-        tabNumber = index + 1;
-      } else if (index === tabCount - 1) {
-        tabNumber = 9;
-      } else {
-        tabNumber = null;
-      }
+  chrome.windows.getAll({ populate: true }, (windows) => {
+    windows.forEach((win) => {
+      const tabs = win.tabs;
+      const tabCount = tabs.length;
+      tabs.forEach((tab, index) => {
+        let tabNumber;
+        if (index < 8) {
+          tabNumber = index + 1;
+        } else if (index === tabCount - 1) {
+          tabNumber = 9;
+        } else {
+          tabNumber = null;
+        }
 
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: addTabNumber,
-        args: [tabNumber]
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: addTabNumber,
+          args: [tabNumber]
+        });
       });
     });
   });
